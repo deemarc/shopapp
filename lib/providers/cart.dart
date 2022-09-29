@@ -28,6 +28,7 @@ class Cart with ChangeNotifier {
           productId,
           (value) => CartItem(
               id: value.id,
+              productId: productId,
               title: value.title,
               quantity: value.quantity + 1,
               price: value.price));
@@ -36,10 +37,20 @@ class Cart with ChangeNotifier {
           productId,
           () => CartItem(
               id: DateTime.now().toString(),
+              productId: productId,
               title: title,
               quantity: 1,
               price: price));
     }
+    notifyListeners();
+  }
+  void removeItem(String productId){
+    _items.remove(productId);
+    notifyListeners();
+  }
+
+  void clear(){
+    _items = {};
     notifyListeners();
   }
 }
