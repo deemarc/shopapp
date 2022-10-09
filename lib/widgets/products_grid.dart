@@ -32,7 +32,7 @@ class ProductsGrid extends StatelessWidget {
               // create: (BuildContext context){
               //   return products[i];
               // },
-              child: ProductItem(),
+              child: const ProductItem(),
             )));
   }
 }

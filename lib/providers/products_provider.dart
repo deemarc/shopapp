@@ -27,12 +27,34 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Product findById(String id){
+  Product findById(String id) {
     return _items.firstWhere((prod) => prod.id == id);
   }
 
   void addProduct(Product product) {
-    _items.add(product);
+    final newProduct = Product(
+        id: DateTime.now().toString(),
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl);
+    _items.add(newProduct);
+    // _items.insert(0, newProduct); // at the beginning of product list
+    notifyListeners();
+  }
+
+  void updateProduct(String id, Product newProduct) {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    if (prodIndex != null && prodIndex >= 0){
+      _items[prodIndex] = newProduct;
+      notifyListeners();
+    }
+
+  }
+
+  void deleteProduct(String id){
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    _items.removeAt(prodIndex);
     notifyListeners();
   }
 }
