@@ -53,8 +53,7 @@ class Products with ChangeNotifier {
   }
 
   void deleteProduct(String id){
-    final prodIndex = _items.indexWhere((prod) => prod.id == id);
-    _items.removeAt(prodIndex);
+    _items.removeWhere((prod) => prod.id == id);
     notifyListeners();
   }
 }
