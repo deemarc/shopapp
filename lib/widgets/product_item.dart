@@ -21,15 +21,19 @@ class ProductItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: GridTileBar(
           backgroundColor: Colors.black54,
-          leading: IconButton(
-            icon: Icon(product.isFavourite == true
-                ? Icons.favorite
-                : Icons.favorite_outline),
-            color: Theme.of(context).accentColor,
-            onPressed: () => {product.toggleFavouriteStatus()},
+          leading: Consumer<Product>(
+            builder: (ctx, product, child) {
+              return IconButton(
+                icon: Icon(product.isFavourite == true
+                    ? Icons.favorite
+                    : Icons.favorite_outline),
+                color: Theme.of(context).accentColor,
+                onPressed: () => {product.toggleFavouriteStatus()},
+              );
+            }
           ),
           trailing: IconButton(
-            icon: Icon(Icons.shopping_cart),
+            icon: const Icon(Icons.shopping_cart),
             color: Theme.of(context).accentColor,
             onPressed: () {
               cart.addItem(product.id, product.price, product.title);
