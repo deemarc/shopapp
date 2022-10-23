@@ -1,6 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class Product with ChangeNotifier{
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import '../models/http_exception.dart';
+
+class Product with ChangeNotifier {
   final String id;
   final String title;
   final String description;
@@ -9,18 +14,27 @@ class Product with ChangeNotifier{
   bool isFavourite;
 
   Product(
-      {
-        required this.id,
-        required this.title,
-        required this.description,
-        required this.price,
-        required this.imageUrl,
-        this.isFavourite = false
-      }
-      );
+      {required this.id,
+      required this.title,
+      required this.description,
+      required this.price,
+      required this.imageUrl,
+      this.isFavourite = false});
 
-  void toggleFavouriteStatus(){
+  Future<void> toggleFavouriteStatus() async {
+    final url = Uri.parse(
+        'https://shopapp-backend-default-rtdb.asia-southeast1.firebasedatabase.app/products/$id.json');
+
     isFavourite = !isFavourite;
+
+    final response =
+        await http.patch(url, body: json.encode({'isFavourite': isFavourite}));
+
+    if (response.statusCode >= 400) {
+      isFavourite = !isFavourite;
+      notifyListeners();
+      throw HttpException("Could not update isFavourite");
+    }
     // print("fav got toggle");
     notifyListeners();
   }

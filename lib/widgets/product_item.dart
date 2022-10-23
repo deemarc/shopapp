@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shopapp/providers/cart.dart';
 import '../providers/product.dart';
 import '../screens/product_detail_screen.dart';
+import 'dart:async';
 
 class ProductItem extends StatelessWidget {
   const ProductItem({Key? key}) : super(key: key);
@@ -21,17 +22,26 @@ class ProductItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: GridTileBar(
           backgroundColor: Colors.black54,
-          leading: Consumer<Product>(
-            builder: (ctx, product, child) {
-              return IconButton(
-                icon: Icon(product.isFavourite == true
-                    ? Icons.favorite
-                    : Icons.favorite_outline),
-                color: Theme.of(context).accentColor,
-                onPressed: () => {product.toggleFavouriteStatus()},
-              );
-            }
-          ),
+          leading: Consumer<Product>(builder: (ctx, product, child) {
+            return IconButton(
+              icon: Icon(product.isFavourite == true
+                  ? Icons.favorite
+                  : Icons.favorite_outline),
+              color: Theme.of(context).accentColor,
+              onPressed: () async {
+                try {
+                  await product.toggleFavouriteStatus();
+                } catch (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                      error.toString(),
+                      textAlign: TextAlign.center,
+                    ),
+                  ));
+                }
+              },
+            );
+          }),
           trailing: IconButton(
             icon: const Icon(Icons.shopping_cart),
             color: Theme.of(context).accentColor,
@@ -45,10 +55,11 @@ class ProductItem extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 duration: const Duration(seconds: 2),
-                action: SnackBarAction(label: 'UNDO', onPressed: (){
-                  cart.removeSingleItem(product.id);
-
-                }),
+                action: SnackBarAction(
+                    label: 'UNDO',
+                    onPressed: () {
+                      cart.removeSingleItem(product.id);
+                    }),
               ));
             },
           ),
