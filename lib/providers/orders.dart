@@ -12,11 +12,37 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  Future<void> fecthAndSetOrders() async {
+  Future<void> fetchAndSetOrders() async {
     final url = Uri.parse(
         'https://shopapp-backend-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json');
     final response = await http.get(url);
-    // print(json.decoder(response.body));
+    final List<OrderItem> loadedOrders = [];
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if (extractedData == null) {
+      return;
+    }
+    extractedData.forEach((orderId, orderData) {
+      loadedOrders.add(
+        OrderItem(
+          id: orderId,
+          amount: orderData['amount'],
+          dateTime: DateTime.parse(orderData['dateTime']),
+          products: (orderData['products'] as List<dynamic>)
+              .map(
+                (item) => CartItem(
+                  id: item['id'],
+                  price: item['price'],
+                  quantity: item['quantity'],
+                  title: item['title'],
+                  productId: item['id'],
+                ),
+              )
+              .toList(),
+        ),
+      );
+    });
+    _orders = loadedOrders.reversed.toList();
+    notifyListeners();
   }
 
   Future<void> addOrders(List<CartItem> cartProducts, double total) async {
